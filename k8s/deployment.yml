@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-demo-spring
+#  namespace: application
+  labels:
+    app: demo-app
+spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: spring-container-demo-app
+          image: srinu641/spring-application-k8s:v1.0
+          #TODO: Always -> every time the kubelet launches a container, the kubelet queries the container image registry to resolve the name to an image digest.
+          #TODO: Never-> the kubelet does not try fetching the image. If the image is somehow already present locally
+          #TODO: IfNotPresent -> the image is pulled only if it is not already present locally.
+          imagePullPolicy: Never #Always
+          ports:
+            - containerPort: 1199
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-app-svc
+#  namespace: web-application
+  labels:
+    app: spring-app-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 1199
+      targetPort: 1199
+  selector:
+    app: demo-app
+---
