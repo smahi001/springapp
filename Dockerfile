@@ -1,15 +1,3 @@
-# # Stage 1: Build Stage
-# FROM maven:3.9.6-eclipse-temurin-22-jammy AS build
-# COPY . .
-# RUN mvn clean package -DskipTests
-#
-# # Stage 2: Runtime Stage
-# FROM openjdk:17-jdk-slim AS runtime
-# COPY --from=build /target/spring-application-k8s.jar spring-application-k8s.jar
-# EXPOSE 1199
-# ENTRYPOINT ["java", "-jar", "spring-application-k8s.jar"]
-
-
 # Step 1: Use official OpenJDK as base image
 FROM openjdk:17-jdk-slim
 # Step 2: Set working directory inside the container
